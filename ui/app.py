@@ -554,10 +554,16 @@ st.markdown(
 # HELPERS
 # ============================================================
 
-BACKEND_URL = os.getenv(
-    "BACKEND_URL",
-    "http://127.0.0.1:8000",
-).rstrip("/")
+def get_backend_url():
+    default_url = os.getenv("BACKEND_URL", "http://127.0.0.1:8000")
+    try:
+        configured_url = st.secrets.get("BACKEND_URL", default_url)
+    except Exception:
+        configured_url = default_url
+    return str(configured_url).rstrip("/")
+
+
+BACKEND_URL = get_backend_url()
 
 
 def render_html(html_code: str):
