@@ -1,0 +1,11 @@
+python-dotenv
+pydantic
+openai
+httpx
+fastapi
+uvicorn
+streamlit
+ddgs
+tavily-python
+pytest
+pytest-asyncio
