@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from typing import Any, Type, TypeVar
 
@@ -27,11 +28,15 @@ class LLMClient:
 
     def __init__(self) -> None:
 
-        self.base_url = "http://localhost:11434"
+        self.base_url = os.getenv(
+            "OLLAMA_BASE_URL",
+            "http://localhost:11434",
+        ).rstrip("/")
+        self.ollama_api_key = os.getenv("OLLAMA_API_KEY", "").strip()
 
         self.client = OpenAI(
             base_url=f"{self.base_url}/v1",
-            api_key=settings.OPENAI_API_KEY or "ollama",
+            api_key=self.ollama_api_key or settings.OPENAI_API_KEY or "ollama",
             timeout=300.0,
         )
 
@@ -240,8 +245,14 @@ IMPORTANT RULES:
                     },
                 }
 
+                headers = (
+                    {"Authorization": f"Bearer {self.ollama_api_key}"}
+                    if self.ollama_api_key
+                    else {}
+                )
                 response = httpx.post(
                     f"{self.base_url}/api/chat",
+                    headers=headers,
                     json=payload,
                     timeout=300.0,
                 )
